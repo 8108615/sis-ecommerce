@@ -1,0 +1,68 @@
+@extends('layouts.admin')
+
+@section('content')
+    <h1>Listado de Roles</h1>
+
+    <hr>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Roles Registrados
+                        <a href="{{ url('/admin/roles/create') }}" style="float: right" class="btn btn-primary"><i class="bi bi-plus"></i> Crear Nuevo</a>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nro</th>
+                                <th>Nombre del Rol</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php
+                                $nro = ($roles->currentPage() - 1) * $roles->perPage() + 1;
+                            @endphp
+                            @foreach($roles as $role)
+                                <tr>
+                                    <td style="text-align: center">{{ $nro++ }}</td>
+                                    <td>{{ $role->name }}</td>
+                                    <td class="text-center">
+                                        <a href="{{ url('/admin/rol/' . $role->id) }}" class="btn btn-info btn-sm"><i class="bi bi-eye"></i> Ver</a>
+                                        <a href="{{  url('/admin/rol/'.$role->id.'/edit') }}" class="btn btn-success btn-sm"><i class="bi bi-pencil"></i> Editar</a>
+                                        <form action="{{ url('/admin/rol/'.$role->id) }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estas Seguro que deseas Eliminar este Rol?')">
+                                                <i class="bi bi-trash"></i> Eliminar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    @if ($roles->hasPages())
+                        <div class="d-flex justify-content-between align-items-center mt-4 px-3">
+                            <div class="text-muted">
+                                Mostrando {{ $roles->firstItem() }} a {{ $roles->lastItem() }} de {{ $roles->total() }} roles
+                            </div>
+                            
+                            <div>
+                                {{ $roles->links('pagination::bootstrap-4') }}
+                            </div>
+                        </div>
+                        
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+@endsection
+
+

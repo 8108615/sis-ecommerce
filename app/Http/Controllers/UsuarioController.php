@@ -14,7 +14,9 @@ class UsuarioController extends Controller
     public function index(Request $request)
     {
         $buscar = $request->get('buscar');
-        $query = User::query();
+        $query = User::whereDoesntHave('roles', function ($q) {
+            $q->where('name', 'SUPER ADMIN');
+        })->withTrashed();
         if ($buscar) {
             $query->where('name', 'like', '%' . $buscar . '%')
                     ->orWhere('email', 'like', '%' . $buscar . '%');
@@ -71,24 +73,64 @@ class UsuarioController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $usuario = User::find($id);
+        $roles = Role::all();
+        return view('admin.usuarios.edit', compact('usuario','roles'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        //return response()->json($request->all());
+        $request->validate([
+            'rol'=> 'required',
+            'name'=> 'required|string|max:255',
+            'email'=> 'required|string|email|max:255|unique:users,email,'.$id,
+            'password'=> 'nullable|string|min:8|confirmed',
+        ]);
+
+        $usuario = User::find($id);
+        $usuario->name = $request->name;
+        $usuario->email = $request->email;
+        if ($request->password) {
+            $usuario->password = bcrypt($request->password);
+        }
+        $usuario->save();
+        $usuario->syncRoles($request->rol);
+
+        return redirect()->route('admin.usuarios.index')
+            ->with('mensaje','Usuario Actualizado Exitosamente')
+            ->with('icono', 'success');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $usuario = User::find($id);
+        $usuario->estado = false;
+        $usuario->save();
+        $usuario->delete();
+
+        return redirect()->route('admin.usuarios.index')
+            ->with('mensaje','Usuario Eliminado Exitosamente')
+            ->with('icono', 'success');
+    }
+
+    public function restore($id)
+    {
+        $usuario = User::withTrashed()->find($id);
+        $usuario->restore();
+        $usuario->estado = true;
+        $usuario->save();
+
+        return redirect()->route('admin.usuarios.index')
+            ->with('mensaje','Usuario Restaurado Exitosamente')
+            ->with('icono', 'success');
     }
 }

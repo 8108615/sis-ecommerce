@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Ajuste;
+use App\Models\Categoria;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -42,6 +43,8 @@ class DatabaseSeeder extends Seeder
             'divisa' => 'Bs',
             'pagina_web' => 'https://erick.com',
         ]);
+
+        Categoria::factory(15)->create();
 
         
             

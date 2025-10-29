@@ -43,4 +43,4 @@ Route::get('/admin/categoria/{id}/edit', [App\Http\Controllers\CategoriaControll
 Route::put('/admin/categoria/{id}', [App\Http\Controllers\CategoriaController::class, 'update'])->name('admin.categorias.update')->middleware('auth');
 Route::delete('/admin/categoria/{id}', [App\Http\Controllers\CategoriaController::class, 'destroy'])->name('admin.categorias.destroy')->middleware('auth');
 
-
+//ruta para las productos

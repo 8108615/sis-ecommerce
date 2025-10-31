@@ -104,6 +104,13 @@
                             </a>
                         </li>
 
+                        <li class="sidebar-item {{ request()->is('admin/producto*') ? 'active' : '' }}">
+                            <a href="{{ url('/admin/productos') }}" class='sidebar-link'>
+                                <i class="bi bi-box-seam"></i>
+                                <span>Productos</span>
+                            </a>
+                        </li>
+
                         <li class="sidebar-title">Ajustes</li>
 
                         <li class="sidebar-item {{ request()->is('admin/ajuste*') ? 'active' : '' }}">

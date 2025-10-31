@@ -9,7 +9,8 @@
             <div class="card">
                 <div class="card-header">
                     <h4>Usuarios Registrados
-                        <a href="{{ url('/admin/usuarios/create') }}" style="float: right" class="btn btn-primary"><i class="bi bi-plus"></i> Crear Nuevo</a>
+                        <a href="{{ url('/admin/usuarios/create') }}" style="float: right" class="btn btn-primary"><i
+                                class="bi bi-plus"></i> Crear Nuevo</a>
                     </h4>
                 </div>
                 <div class="card-body">
@@ -17,11 +18,13 @@
                         <div class="col-md-6">
                             <form action="{{ url('/admin/usuarios') }}" method="GET" class="mt-3">
                                 <div class="input-group">
-                                    <input type="text" name="buscar" class="form-control" placeholder="Buscar..." value="{{ $_REQUEST['buscar'] ?? '' }}">
-                                    <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Buscar</button>
+                                    <input type="text" name="buscar" class="form-control" placeholder="Buscar..."
+                                        value="{{ $_REQUEST['buscar'] ?? '' }}">
+                                    <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i>
+                                        Buscar</button>
                                     @if (isset($_REQUEST['buscar']))
                                         <a href="{{ url('/admin/usuarios') }}" class="btn btn-success">
-                                        <i class="bi bi-trash"></i> Limpiar</a>
+                                            <i class="bi bi-trash"></i> Limpiar</a>
                                     @endif
                                 </div>
                             </form>
@@ -42,7 +45,7 @@
                             @php
                                 $nro = ($usuarios->currentPage() - 1) * $usuarios->perPage() + 1;
                             @endphp
-                            @foreach($usuarios as $usuario)
+                            @foreach ($usuarios as $usuario)
                                 <tr>
                                     <td style="text-align: center">{{ $nro++ }}</td>
                                     <td>{{ $usuario->roles->pluck('name')->implode(', ') }}</td>
@@ -57,66 +60,68 @@
                                     </td>
                                     <td class="text-center">
                                         @if ($usuario->estado == 1)
-                                            <a href="{{ url('/admin/usuario/' . $usuario->id) }}" class="btn btn-info btn-sm"><i class="bi bi-eye"></i> Ver</a>
-                                        <a href="{{  url('/admin/usuario/'.$usuario->id.'/edit') }}" class="btn btn-success btn-sm"><i class="bi bi-pencil"></i> Editar</a>
-                                        <form action="{{ url('/admin/usuario/'.$usuario->id) }}" method="POST" 
-                                            id="miFormulario{{ $usuario->id }}" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" 
-                                                onclick="preguntar{{ $usuario->id }}(event)">
-                                                <i class="bi bi-trash"></i> Eliminar
-                                            </button>
-                                        </form>
-                                        <script>
-                                            function preguntar{{ $usuario->id }}(event) {
-                                                event.preventDefault();
-                                                Swal.fire({
-                                                    title: '¿Deseas Eliminar Este Registro?',
-                                                    text: '',
-                                                    icon: 'question',
-                                                    showDenyButton: true,
-                                                    confirmButtonText: 'Eliminar',
-                                                    confirmButtonColor: '#a5161d',
-                                                    denyButtonColor: '#270a0a',
-                                                    denyButtonText: 'Cancelar',
-                                                }).then((result) => {
-                                                    if(result.isConfirmed) {
-                                                        document.getElementById('miFormulario{{ $usuario->id }}').submit();
-                                                    }
-                                                });
-                                            }
-                                        </script>
+                                            <a href="{{ url('/admin/usuario/' . $usuario->id) }}"
+                                                class="btn btn-info btn-sm"><i class="bi bi-eye"></i> Ver</a>
+                                            <a href="{{ url('/admin/usuario/' . $usuario->id . '/edit') }}"
+                                                class="btn btn-success btn-sm"><i class="bi bi-pencil"></i> Editar</a>
+                                            <form action="{{ url('/admin/usuario/' . $usuario->id) }}" method="POST"
+                                                id="miFormulario{{ $usuario->id }}" class="d-inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm"
+                                                    onclick="preguntar{{ $usuario->id }}(event)">
+                                                    <i class="bi bi-trash"></i> Eliminar
+                                                </button>
+                                            </form>
+                                            <script>
+                                                function preguntar{{ $usuario->id }}(event) {
+                                                    event.preventDefault();
+                                                    Swal.fire({
+                                                        title: '¿Deseas Eliminar Este Registro?',
+                                                        text: '',
+                                                        icon: 'question',
+                                                        showDenyButton: true,
+                                                        confirmButtonText: 'Eliminar',
+                                                        confirmButtonColor: '#a5161d',
+                                                        denyButtonColor: '#270a0a',
+                                                        denyButtonText: 'Cancelar',
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
+                                                            document.getElementById('miFormulario{{ $usuario->id }}').submit();
+                                                        }
+                                                    });
+                                                }
+                                            </script>
                                         @else
-                                            <form action="{{ url('/admin/usuario/'.$usuario->id. '/restaurar') }}" method="POST" 
-                                            id="miFormulario{{ $usuario->id }}" class="d-inline">
-                                            @csrf
-                                            <button type="submit" class="btn btn-warning btn-sm" 
-                                                onclick="preguntar{{ $usuario->id }}(event)">
-                                                <i class="bi bi-arrow-clockwise"></i> Restaurar
-                                            </button>
-                                        </form>
-                                        <script>
-                                            function preguntar{{ $usuario->id }}(event) {
-                                                event.preventDefault();
-                                                Swal.fire({
-                                                    title: '¿Deseas Restaurar Este Registro?',
-                                                    text: '',
-                                                    icon: 'question',
-                                                    showDenyButton: true,
-                                                    confirmButtonText: 'Restaurar',
-                                                    confirmButtonColor: '#a5161d',
-                                                    denyButtonColor: '#270a0a',
-                                                    denyButtonText: 'Cancelar',
-                                                }).then((result) => {
-                                                    if(result.isConfirmed) {
-                                                        document.getElementById('miFormulario{{ $usuario->id }}').submit();
-                                                    }
-                                                });
-                                            }
-                                        </script>
+                                            <form action="{{ url('/admin/usuario/' . $usuario->id . '/restaurar') }}"
+                                                method="POST" id="miFormulario{{ $usuario->id }}" class="d-inline">
+                                                @csrf
+                                                <button type="submit" class="btn btn-warning btn-sm"
+                                                    onclick="preguntar{{ $usuario->id }}(event)">
+                                                    <i class="bi bi-arrow-clockwise"></i> Restaurar
+                                                </button>
+                                            </form>
+                                            <script>
+                                                function preguntar{{ $usuario->id }}(event) {
+                                                    event.preventDefault();
+                                                    Swal.fire({
+                                                        title: '¿Deseas Restaurar Este Registro?',
+                                                        text: '',
+                                                        icon: 'question',
+                                                        showDenyButton: true,
+                                                        confirmButtonText: 'Restaurar',
+                                                        confirmButtonColor: '#a5161d',
+                                                        denyButtonColor: '#270a0a',
+                                                        denyButtonText: 'Cancelar',
+                                                    }).then((result) => {
+                                                        if (result.isConfirmed) {
+                                                            document.getElementById('miFormulario{{ $usuario->id }}').submit();
+                                                        }
+                                                    });
+                                                }
+                                            </script>
                                         @endif
-                                        
+
                                     </td>
                                 </tr>
                             @endforeach
@@ -125,22 +130,17 @@
                     @if ($usuarios->hasPages())
                         <div class="d-flex justify-content-between align-items-center mt-4 px-3">
                             <div class="text-muted">
-                                Mostrando {{ $usuarios->firstItem() }} a {{ $usuarios->lastItem() }} de {{ $usuarios->total() }} usuarios
+                                Mostrando {{ $usuarios->firstItem() }} a {{ $usuarios->lastItem() }} de
+                                {{ $usuarios->total() }} usuarios
                             </div>
-                            
+
                             <div>
                                 {{ $usuarios->links('pagination::bootstrap-4') }}
                             </div>
                         </div>
-                        
                     @endif
                 </div>
             </div>
         </div>
     </div>
-
-    
-
 @endsection
-
-

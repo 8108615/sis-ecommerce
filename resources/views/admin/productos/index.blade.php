@@ -52,9 +52,9 @@
                                     <td>{{ $producto->nombre }}</td>
                                     <td>{{ $producto->codigo }}</td>
                                     <td>{{ $producto->descripcion_corta }}</td>
-                                    <td>{{ $producto->precio_compra }}</td>
-                                    <td>{{ $producto->precio_venta }}</td>
-                                    <td>{{ $producto->stock }}</td>
+                                    <td>{{ $ajuste->divisa." ".$producto->precio_compra }}</td>
+                                    <td>{{ $ajuste->divisa." ".$producto->precio_venta }}</td>
+                                    <td style="text-align: center">{{ $producto->stock }}</td>
                                     <td class="text-center">
                                         <div class="btn-group btn-group-sm" role="group">
                                             <a href="{{ url('/admin/producto/' . $producto->id) }}" class="btn btn-info btn-sm"><i class="bi bi-eye"></i> Ver</a>
@@ -99,12 +99,10 @@
                             <div class="text-muted">
                                 Mostrando {{ $productos->firstItem() }} a {{ $productos->lastItem() }} de {{ $productos->total() }} productos
                             </div>
-                            
                             <div>
                                 {{ $productos->links('pagination::bootstrap-4') }}
                             </div>
                         </div>
-                        
                     @endif
                 </div>
             </div>

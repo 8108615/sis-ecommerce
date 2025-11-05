@@ -56,3 +56,9 @@ Route::put('/admin/producto/{id}', [App\Http\Controllers\ProductoController::cla
 Route::delete('/admin/producto/{id}', [App\Http\Controllers\ProductoController::class, 'destroy'])->name('admin.productos.destroy')->middleware('auth');
 
 
+
+
+///////////////////////////////// Rutas para la Web ////////////////////////////////////////////
+Route::get('/', [App\Http\Controllers\WebController::class, 'index'])->name('web.index');
+Route::get('/producto/{id}', [App\Http\Controllers\ProductoController::class, 'detalle_producto'])->name('web.detalle_producto');
+

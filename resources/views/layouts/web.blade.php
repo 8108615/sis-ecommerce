@@ -40,6 +40,16 @@
 <body class="index-page">
 
   <header id="header" class="header sticky-top">
+
+    @if($errors->any())
+      <div class="alert alert-danger">
+        <ul>
+          @foreach ($errors->all() as $error)
+            <li>{{  $error }}</li>
+          @endforeach
+        </ul>
+      </div>
+    @endif
     
 
     <!-- Main Header -->
@@ -75,34 +85,43 @@
             <!-- Account -->
             <div class="dropdown account-dropdown">
               <button class="header-action-btn" data-bs-toggle="dropdown">
-                <i class="bi bi-person"></i>
+                <i class="bi bi-person"></i> {{ Auth::user()->name ?? '' }}
               </button>
               <div class="dropdown-menu">
                 <div class="dropdown-header">
-                  <h6>Welcome to <span class="sitename">FashionStore</span></h6>
-                  <p class="mb-0">Access account &amp; manage orders</p>
+                  <h6>Bienvenido a <span class="sitename">{{ $ajuste->nombre }}</span></h6>
                 </div>
                 <div class="dropdown-body">
                   <a class="dropdown-item d-flex align-items-center" href="account.html">
                     <i class="bi bi-person-circle me-2"></i>
-                    <span>My Profile</span>
+                    <span>Mi Perfil</span>
                   </a>
                   <a class="dropdown-item d-flex align-items-center" href="account.html">
                     <i class="bi bi-bag-check me-2"></i>
-                    <span>My Orders</span>
+                    <span>Mis Pedidos</span>
                   </a>
                   <a class="dropdown-item d-flex align-items-center" href="account.html">
                     <i class="bi bi-heart me-2"></i>
-                    <span>My Wishlist</span>
+                    <span>Mi lista de Deseos</span>
                   </a>
                   <a class="dropdown-item d-flex align-items-center" href="account.html">
                     <i class="bi bi-gear me-2"></i>
-                    <span>Settings</span>
+                    <span>Ajustes</span>
                   </a>
                 </div>
                 <div class="dropdown-footer">
-                  <a href="register.html" class="btn btn-primary w-100 mb-2">Sign In</a>
-                  <a href="login.html" class="btn btn-outline-primary w-100">Register</a>
+                  @if (Auth::check())
+                    <form method="POST" action="{{ route('logout') }}">
+                      @csrf
+                      <button type="submit" class="btn btn-outline-danger w-100">
+                        Cerrar Sesión
+                      </button>
+                    </form>
+
+                  @else
+                    <a href="{{ url('/web/login') }}" class="btn btn-primary w-100 mb-2">Iniciar Sesión</a>
+                    <a href="{{ url('/web/registro') }}" class="btn btn-outline-primary w-100">Crear Cuenta</a>
+                  @endif
                 </div>
               </div>
             </div>

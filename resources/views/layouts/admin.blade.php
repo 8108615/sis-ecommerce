@@ -201,7 +201,6 @@
                 timer: 4000
             });
         </script>
-    @else
         
     @endif
     

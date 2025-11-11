@@ -48,4 +48,14 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function productoFavoritos()
+    {
+        return $this->hasMany(ProductoFavorito::class, 'usuario_id');
+    }
+
+    public function carritos()
+    {
+        return $this->hasMany(Carrito::class, 'usuario_id');
+    }
 }

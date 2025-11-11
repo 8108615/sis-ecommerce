@@ -28,3 +28,29 @@ Table producto_imagenes {
   created_at timestamp
   updated_at timestamp
 }
+
+Table usuarios {
+  id int [pk, increment]
+  nombre varchar
+  emael varchar [unique]
+  password varchar
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table producto_favoritos {
+  id int [pk, increment]
+  usuario_id int [ref: > usuarios.id]
+  producto_id int [ref: > productos.id]
+  created_at timestamp
+  updated_at timestamp
+}
+Table carritos {
+  id int [pk, increment]
+
+  usuario_id int [ref: > usuarios.id]
+  producto_id int [ref: > productos.id]
+  cantidad int
+  created_at timestamp
+  updated_at timestamp
+}

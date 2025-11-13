@@ -116,7 +116,6 @@
                                     <input type="hidden" name="producto_id" value="{{ $producto->id }}">
                                     <input type="hidden" name="cantidad" value="1">
                                     <button class="cart-btn">Agregar al Carrito</button>
-
                                 </form>
                             </div>
                             <div class="product-info">

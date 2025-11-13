@@ -144,7 +144,8 @@
             </a>
 
             <!-- Cart -->
-            <a href="card.html" class="header-action-btn">
+            <a href="{{ url('/carrito-
+            +++++++-----------------------+') }}" class="header-action-btn">
               <i class="bi bi-cart3"></i>
               @php
                 if(Auth::check()) {

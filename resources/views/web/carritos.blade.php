@@ -136,38 +136,45 @@
                                 <div class="col-lg-6 text-md-end">
                                     <form action="{{ url('/carrito/limpiar') }}" method="POST">
                                         @csrf
-                                        
+
                                         <button type="submit" class="btn btn-outline-remove">
-                                        <i class="bi bi-trash"></i> Limpiar Carrito
-                                    </button>
+                                            <i class="bi bi-trash"></i> Limpiar Carrito
+                                        </button>
                                     </form>
-                                    
+
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+
                 <div class="col-lg-4 mt-4 mt-lg-0" data-aos="fade-up" data-aos-delay="300">
                     <div class="cart-summary">
                         <h4 class="summary-title">Resumen del Pedido</h4>
 
+                        <form action="{{ route('web.paypal.pago') }}" method="POST">
+                            @csrf
 
+                            <div>
+                                <span class="summary-label">Datos del Envio de la Orden</span><br>
+                                <input type="text" class="form-control" placeholder="Direccion de Envio..." name="direccion_envio" required>
+                            </div>
 
-                        <div class="summary-total">
-                            <span class="summary-label">Total</span>
-                            <span class="summary-value">{{ $ajuste->divisa . ' ' . $total }}</span>
-                        </div>
+                            <div class="summary-total">
+                                <span class="summary-label">Total</span>
+                                <span class="summary-value">{{ $ajuste->divisa . ' ' . $total }}</span>
+                            </div>
 
-                        <div class="checkout-button">
-                            <form action="{{ route('web.paypal.pago') }}" method="POST">
-                                @csrf
+                            <div class="checkout-button">
+
                                 <input type="hidden" name="total" value="{{ $total }}">
                                 <button type="submit" class="btn btn-primary w-100">
                                     <i class="bi bi-paypal"> Pagar con Paypal</i>
                                 </button>
-                            </form>
-                        </div>
+
+                            </div>
+                        </form>
 
                         <div class="continue-shopping">
                             <a href="{{ url('/') }}" class="btn btn-link w-100">

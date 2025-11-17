@@ -2,7 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\CompraConfirmada;
+use App\Models\Ajuste;
+use App\Models\Carrito;
+use App\Models\DetalleOrden;
+use App\Models\Orden;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 
 
@@ -21,6 +29,13 @@ class PaypalController extends Controller
     {
         // Lógica para procesar el pago con PayPal
         //return response()->json($request->all());
+        $request->validate([
+            'direccion_envio' => 'required|string|max:255',
+            'total' => 'required|numeric|min:0',
+        ]);
+
+        $direccion_formulario = $request->input('direccion_envio');
+        $request->session()->put('direccion_envio', $direccion_formulario);
         $total = $request->input('total');
         $data = [
             "intent" => "CAPTURE",
@@ -61,20 +76,81 @@ class PaypalController extends Controller
 
     public function gracias(Request $request)
     {
+        $usuario_id = Auth::user()->id;
         // Lógica para mostrar la página de agradecimiento después del pago exitoso
         $token = $request->query('token');
         try {
             $response = $this->provider->capturePaymentOrder($token);
             
             if (isset($response['status']) && $response['status'] == 'COMPLETED') {
-                // Aquí puedes procesar la orden, guardar en base de datos, enviar correo, etc.
-                return redirect()->route('web.carrito.index')->with('mensaje', 'Pago realizado con éxito. Gracias por su compra.')->with('icono', 'success');
+                // Aquí puedes actualizar el estado de pedido en tu base de datos, si es necesario
+                //dd($response);
+                $DatosPago = $response['purchase_units'][0]['payments']['captures'][0];
+                $total = $DatosPago['amount']['value'];
+                $transaccion_id = $DatosPago['id'];
+                $estado_pago = $DatosPago['status'];
+                $divisa = $DatosPago['amount']['currency_code'];
+                $estado_orden = 'Procesando';
+                $direccion_envio = $request->session()->get('direccion_envio','No Proporcionada');
+
+                DB::beginTransaction();
+
+                try {
+                    // Guardar la orden en la base de datos
+                    $orden = new Orden();
+                    $orden->usuario_id = $usuario_id;
+                    $orden->total = $total;
+                    $orden->divisa = $divisa;
+                    $orden->estado_pago = $estado_pago;
+                    $orden->estado_orden = $estado_orden;
+                    $orden->transaccion_id = $transaccion_id;
+                    $orden->direccion_envio = $direccion_envio;
+                    $orden->save();
+
+                    //Guarda los detalles de la orden
+                    $carritos = Carrito::where('usuario_id', $usuario_id)->get();
+                    foreach ($carritos as $item) {
+                        $detalle = new DetalleOrden();
+                        $detalle->orden_id = $orden->id;
+                        $detalle->producto_id = $item->producto_id;
+                        $detalle->cantidad = $item->cantidad;
+                        $detalle->precio = $item->producto->precio_venta;
+                        $detalle->save();
+
+                        //descontar stock
+                        $producto = $item->producto;
+                        $producto->stock -= $item->cantidad;
+                        $producto->save();
+
+                        //Eliminar el producto del carrito
+                        $item->delete();
+                    }
+
+                    DB::commit();
+
+                    Mail::to($orden->usuario->email)->send(new CompraConfirmada($orden));
+
+                    return redirect()->route('web.paypal.orden_completado',$orden->id)->with('mensaje', 'Pago realizado con éxito. Gracias por su compra!,
+                    Se envio una copia de la orden a tu correo Electronico')->with('icono', 'success');
+                }catch (\Exception $e) {
+                    DB::rollBack();
+                    return redirect()->route('web.carrito.index')->with('mensaje', 'Error al guardar la orden: ' . $e->getMessage())->with('icono', 'error');
+                }
+
+                //return redirect()->route('web.carrito.index')->with('mensaje', 'Pago realizado con éxito. Gracias por su compra.')->with('icono', 'success');
             } else {
                 return redirect()->route('web.carrito.index')->with('mensaje', 'El pago no se pudo completar.')->with('icono', 'error');
             }
         } catch (\Exception $e) {
             return redirect()->route('web.carrito.index')->with('mensaje', 'Excepcion capturada: ' . $e->getMessage())->with('icono', 'error');
         }
+    }
+
+    public function orden_completado($id)
+    {
+        $orden = Orden::findOrFail($id);
+        $ajuste = Ajuste::first();
+        return view('web.orden_completado', compact('orden','ajuste'));
     }
 
     public function cancelar()

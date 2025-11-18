@@ -1,115 +1,170 @@
-@extends('layouts.web')
+<!DOCTYPE html>
+<html lang="es">
 
-@section('title', 'Compra Exitosa | Gracias por tu Pedido')
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirmación de Pedido N° {{ $orden->id }}</title>
+    <style>
+        /* Estilos generales para el cuerpo del correo */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+        }
 
-@section('content')
-    <!-- Page Title -->
-    <div class="page-title light-background">
-        <div class="container text-center">
-            <h1 class="mb-2 mb-lg-0">Confirmacion de Pedido</h1>
-        </div>
-    </div><!-- End Page Title -->
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
 
-    <!-- Cart Section -->
-    <section id="confirmation" class="confirmation section">
+        .header {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eeeeee;
+        }
 
-        <div class="container" data-aos="fade-up" data-aos-delay="100">
-            <!-- Bloque de Agradecimiento y Resumen Superior -->
-            <div class="row justify-content-center mb-5">
-                <div class="col-lg-8">
-                    <div class="card-shadow-lg border-0 text-center p-5 bg-light-subtle">
-                        <i class="bi bi-check-circle display-1 text-success mb-3"></i>
-                        <h2 class="card-title text-success mb-3">¡Gracias por tu Compra!</h2>
-                        <p class="lead mb-4">
-                            Tu pedido ha sido Procesado con Exito y esta confirmado. Recibiras una copia de esta
-                            confirmacion por correo ekectronico.
-                        </p>
-                        <div class="confirmation-details d-flex justify-content-around fw-bold flex-wrap">
-                            <span class="mb-2 mb-md-0">
-                                **Orden N°:** <span class="text-primary">{{ $orden->id }}</span>
-                            </span>
-                            <span class="mb-2 mb-md-0">
-                                **Total Pagado:** <span
-                                    class="text-primary">{{ $orden->divisa . ' ' . number_format($orden->total, 2) }}</span>
-                            </span>
+        .header h1 {
+            color: #198754;
+            font-size: 28px;
+        }
 
-                            <!-- Añadir fecha del Pedido -->
-                            <span class="mb-2 mb-md-0">
-                                **Fecha:** <span
-                                    class="text-secondary">{{ \Carbon\Carbon::parse($orden->created_at)->format('d/m/Y H:i') }}</span>
-                            </span>
-                        </div>
-                    </div>
-                </div>
+        .section-title {
+            color: #333333;
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #198754;
+            padding-bottom: 5px;
+        }
+
+        .product-item {
+            padding: 10px 0;
+            border-bottom: 1px dashed #cccccc;
+            display: flex;
+            align-items: center;
+        }
+
+        .product-item img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            margin-right: 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .summary-table {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+        }
+
+        .summary-table td {
+            padding: 8px 0;
+        }
+
+        .summary-table .total-row {
+            font-weight: bold;
+            font-size: 1.1em;
+            border-top: 2px solid #5cb85c;
+        }
+
+        .text-success {
+            color: #198754;
+        }
+
+        .footer {
+            text-align: center;
+            padding-top: 20px;
+            font-size: 12px;
+            color: #777777;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div style="background-color: #f4f4f4; padding: 20px 0;">
+        <div class="container"
+            style="width: 100%; max-width: 600px; margin: 0 auto; padding: 20px; background-color:
+     #ffffff; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+
+            <div class="header" style="text-align: center; padding-bottom: 20px; border-bottom: 1px solid #eeeeee;">
+                <h1 style="color: #198754; font-size: 28px;">¡Gracias por tu compra!</h1>
+                <p style="font-size: 16px; color: #555555;">Tu pedido *N° {{ $orden->id }}* ha sido confirmado con
+                    éxito.</p>
             </div>
 
-            <div class="row">
-                {{-- Columna izquierda: detalles del Pedido --}}
-                <div class="col-lg-7" data-aos="fade-up" data-aos-delay="200">
-                    <h4 class="mb-3">Productos Adquiridos</h4>
-                    <div class="order-items list-group mb-4">
-
-                        @foreach ($orden->detalles as $detalle)
-                            <div class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="mb-0">{{ $detalle->producto->nombre }}</h6>
-                                    @php
-                                        $imagen_producto = $detalle->producto->imagenes->first();
-                                        $imagen = $imagen_producto->imagen ?? '';
-                                    @endphp
-                                    <img src="{{ asset('storage/' . $imagen) }}" width="100px" alt="Product" loading="lazy">
-                                    <br>
-                                    <small class="text-muted">
-                                        {{ $detalle->cantidad }} br
-                                        Precio Unitario:
-                                        {{ $ajuste->divisa . ' ' . number_format($detalle->precio, 2) }}
-                                    </small>
-                                </div>
-                                <span class="fw-bold">
-                                    SubTotal:
-                                    {{ $ajuste->divisa . ' ' . number_format($detalle->cantidad * $detalle->precio, 2) }}
-                                </span>
-                            </div>
-                        @endforeach
-                    </div>
-
-                    <div class="card p-3 mb-4 border-info-subtle bg-info-subtle">
-                        <h5 class="card-title mb-2"><i class="bi bi-geo-alt me-2"></i> Direccion de Envio</h5>
-                        <p class="card-text mb-0">*{{ $orden->usuario->name ?? 'Cliente' }}*</p>
-                        <p class="card-text mb-0">**{{ $orden->usuario->email ?? 'Email' }}**</p>
-                        <p class="card-text mb-0">{{ $orden->direccion_envio }}</p>
-                    </div>
-                </div>
-
-                {{-- Columna Derecha: Resumen de Pagos y contactos --}}
-                <div class="col-lg-5" data-aos="fade-up" data-aos-delay="300">
-                    <div class="card shadow-sm p-4 mb-4">
-                        <h5 class="mb-3">Resumen del Pago</h5>
-                        <ul class="list-unstyled">
-                            
-                            <li class="d-flex justify-content-between fw-bold border-top">
-                                <span>Total Final</span>
-                                <span
-                                    class="text-success fs-5">{{ $ajuste->divisa . ' ' . number_format($orden->total, 2) }}</span>
-                            </li>
-                        </ul>
-                        <p class="text-muted mt-3 mb-0">
-                            Metodo de Pago: **PayPal**
-                        </p>
-                        <p class="text-muted mb-0">Estado: **{{ ucfirst($orden->estado_orden) }}**</p>
-                    </div>
-
-                    {{-- Siguientes pasos --}}
-                    <div class="card p-4">
-                        <h5 class="mb-3">¿Que Sigue?</h5>
-                        <p class="mb-2"><i class="bi bi-envelope me-2 text-warning"></i> Revisa tu correo Electronico para
-                            la factura detallada.</p>
-                        <p class="mb-2"><i class="bi bi-truck me-2 text-warning"></i> Recibiras una notificacion cuadno tu
-                            pedido sea enviado.</p>
-                    </div>
-                </div>
+            <div
+                style="padding: 15px; border: 1px solid #bce8f1; background-color: #d9edf7; border-radius: 4px; margin-top: 20px;">
+                <h3 style="color: #31708f; margin-top: 0; font-size: 16px;">Dirección de Envío</h3>
+                <p style="margin: 5px 0; color: #31708f;">**{{ $orden->usuario->email ?? 'Cliente' }}**</p>
+                <p style="margin: 5px 0; color: #31708f;">{{ $orden->direccion_envio }}</p>
             </div>
-        </div>
 
-    </section><!-- /Cart Section -->
-@endsection
+            <h2 class="section-title"
+                style="color: #333333; font-size: 18px; margin-top: 20px; margin-bottom: 10px; border-bottom: 2px solid #198754; padding-bottom: 5px;">
+                Productos Adquiridos</h2>
+            @foreach ($orden->detalles as $detalle)
+                <div class="product-item"
+                    style="padding: 10px 0; border-bottom: 1px dashed #cccccc; display: flex; align-items: center;">
+
+                    {{-- Bloque de Imagen --}}
+                    @if ($detalle->producto)
+                        @php
+                            $imagen_producto = $detalle->producto->imagenes->first();
+                            $imagen = $imagen_producto->imagen ?? '';
+                        @endphp
+                        
+                        <img src="{{ asset('storage/' . $imagen) }}"
+                            alt="{{ $detalle->producto->nombre }}"
+                            style="width: 50px; height: 50px; object-fit: cover; margin-right: 15px; border-radius: 4px; border: 1px solid #ddd;">
+                    @else
+                        <div
+                            style="width: 50px; height: 50px; margin-right: 15px; border: 1px solid #ddd; background-color: #eee; text-align: center; line-height: 50px; color: #999;">
+                            [IMG]</div>
+                    @endif
+
+                    <div style="flex-grow: 1;">
+                        <p style="margin: 0; font-weight: bold; color: #333;">{{ $detalle->producto->nombre }}</p>
+                        <p style="margin: 0; font-size: 12px; color: #777;">{{ $detalle->cantidad }} x
+                            {{ $orden->divisa . ' ' . number_format($detalle->precio, 2) }}</p>
+                    </div>
+
+                    <span style="font-weight: bold; color: #333;">
+                        {{ $orden->divisa . ' ' . number_format($detalle->cantidad * $detalle->precio, 2) }}
+                    </span>
+                </div>
+            @endforeach
+
+            <h2 class="section-title"
+                style="color: #333333; font-size: 18px; margin-top: 20px; margin-bottom: 10px; border-bottom: 2px solid #198754; padding-bottom: 5px;">
+                Resumen del Pago</h2>
+            <table class="summary-table" style="width: 100%; margin-top: 15px; border-collapse: collapse;">
+                <tbody>
+                    <tr class="total-row" style="font-weight: bold; font-size: 1.1em; border-top: 2px solid #5cb85c;">
+                        <td style="padding: 8px 0;">Total Final:</td>
+                        <td class="text-success" style="padding: 8px 0; text-align: right; color: #198754;">
+                            {{ $orden->divisa . ' ' . number_format($orden->total, 2) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <div class="footer" style="text-align: center; padding-top: 20px; font-size: 12px; color: #777777;">
+                <p>Este es un correo automático, por favor no responda a esta dirección.</p>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

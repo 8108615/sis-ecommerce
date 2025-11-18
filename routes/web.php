@@ -55,7 +55,9 @@ Route::get('/admin/producto/{id}/edit', [App\Http\Controllers\ProductoController
 Route::put('/admin/producto/{id}', [App\Http\Controllers\ProductoController::class, 'update'])->name('admin.productos.update')->middleware('auth');
 Route::delete('/admin/producto/{id}', [App\Http\Controllers\ProductoController::class, 'destroy'])->name('admin.productos.destroy')->middleware('auth');
 
-
+//////////////////// rutas para los pedidos
+Route::get('/admin/pedidos', [App\Http\Controllers\OrdenController::class, 'index'])->name('admin.pedidos.index')->middleware('auth');
+Route::get('/admin/pedido/{id}', [App\Http\Controllers\OrdenController::class, 'create'])->name('admin.pedidos.create')->middleware('auth');
 
 
 ///////////////////////////////// Rutas para la Web ////////////////////////////////////////////
@@ -86,6 +88,7 @@ Route::post('/paypal/pago', [App\Http\Controllers\PaypalController::class, 'pago
 Route::get('/paypal/gracias', [App\Http\Controllers\PaypalController::class, 'gracias'])->name('web.paypal.gracias');
 Route::get('/paypal/orden_completado/{id}', [App\Http\Controllers\PaypalController::class, 'orden_completado'])->name('web.paypal.orden_completado');
 Route::get('/paypal/cancelar', [App\Http\Controllers\PaypalController::class, 'cancelar'])->name('web.paypal.cancelar');
+
 
 
 

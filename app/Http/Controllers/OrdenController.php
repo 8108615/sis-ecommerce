@@ -12,15 +12,18 @@ class OrdenController extends Controller
      */
     public function index()
     {
-        //
+        $pedidos = Orden::with('detalles')->orderBy('created_at', 'desc')->paginate(5);
+        //return response()->json($ordenes);
+        return view('admin.pedidos.index', compact('pedidos'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create($id)
     {
-        //
+        $pedido = Orden::with('detalles')->findOrFail($id);
+        return view('admin.pedidos.create', compact('pedido'));
     }
 
     /**
